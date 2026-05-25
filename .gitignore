@@ -4,6 +4,7 @@
 .env.*.local
 *.pem
 *.key
+.env.ewample
 secrets/
 client_secret*.json
 *-credentials.json
