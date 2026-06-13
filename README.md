@@ -1,6 +1,12 @@
-# Credit Scoring Wave - Projet Cloud & DevOps
+# Wave Credit Score - Projet Cloud & DevOps
 
-Ce projet est une application de recommandation de notation de crédit basée sur des extraits de compte bancaire.
+## 1. Vue d'ensemble
+
+**Wave Credit Score** est une application web de scoring de crédit qui analyse l'historique de transactions Wave d'un utilisateur (importé via PDF) pour prédire sa capacité d'emprunt, son score de remboursement et sa santé financière globale. Elle s'adresse aux particuliers et aux institutions financières (MFI, banques) qui souhaitent évaluer la solvabilité de clients non bancarisés mais actifs sur Mobile Money.
+
+## 2. Problème résolu
+
+La majorité des populations en Afrique de l'Ouest n'ont pas d'historique bancaire traditionnel, ce qui les exclut du système de crédit classique. Pourtant, elles effectuent des dizaines à des centaines de transactions Wave par mois. **Wave Credit Score** transforme cet historique en signal financier exploitable.
 
 L'objectif de ce livrable (n°2) est de valider le déploiement Cloud, l'approche CI/CD et l'architecture logicielle via des conteneurs.
 
@@ -37,7 +43,7 @@ Un pipeline automatisé tourne à chaque `push` via **GitHub Actions**. Il valid
 - Construction des images Docker.
 - (Optionnel/Activé) : Redirection vers Amazon ECR si branché.
 
-## Développement technique 
+## Développement technique
 
 - La capacité d'emprunt a été repensée pour être extraite dynamiquement depuis le Backend ML et calculée avec les revenus plutôt qu'inscrite en dur côté UI.
 - L'authentification utilise la vérification de jetons JWT sécurisés via OAuth Google. 
