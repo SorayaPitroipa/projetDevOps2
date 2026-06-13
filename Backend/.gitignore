@@ -12,3 +12,4 @@ uploads/
 
 # Optional
 .DS_Store
+app.db
