@@ -2,7 +2,7 @@
 
 ## 1. Vue d'ensemble
 
-**Wave Credit Score** est une application web de scoring de crédit qui analyse l'historique de transactions Wave d'un utilisateur (importé via PDF) pour prédire sa capacité d'emprunt, son score de remboursement et sa santé financière globale. Elle s'adresse aux particuliers et aux institutions financières (MFI, banques) qui souhaitent évaluer la solvabilité de clients non bancarisés mais actifs sur Mobile Money.
+**CEquality** est une application web de scoring de crédit qui analyse l'historique de transactions Wave d'un utilisateur (importé via PDF) pour prédire sa capacité d'emprunt, son score de remboursement et sa santé financière globale. Elle s'adresse aux particuliers et aux institutions financières (MFI, banques) qui souhaitent évaluer la solvabilité de clients non bancarisés mais actifs sur Mobile Money.
 
 ## 2. Problème résolu
 
