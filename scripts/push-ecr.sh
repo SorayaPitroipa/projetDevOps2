@@ -34,13 +34,11 @@ aws ecr get-login-password --region "${AWS_REGION}" \
 
 docker build \
   -t "${REGISTRY}/${BACKEND_REPO}:${IMAGE_TAG}" \
-  backend
+  Backend
 
 docker build \
-  --build-arg "VITE_API_URL=${VITE_API_URL}" \
-  --build-arg "VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}" \
   -t "${REGISTRY}/${FRONTEND_REPO}:${IMAGE_TAG}" \
-  frontend
+  Frontend
 
 docker push "${REGISTRY}/${BACKEND_REPO}:${IMAGE_TAG}"
 docker push "${REGISTRY}/${FRONTEND_REPO}:${IMAGE_TAG}"
