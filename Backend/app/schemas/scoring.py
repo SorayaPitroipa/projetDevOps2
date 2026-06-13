@@ -9,3 +9,4 @@ class ScoreResult(BaseModel):
     regularite_revenus: float
     ratio_epargne: float
     freq_transactions_mois: float
+    capacite_emprunt: float

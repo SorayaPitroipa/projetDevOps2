@@ -7,44 +7,35 @@ import pandas as pd
 from app.data.feature_engineering import extract_features_from_transactions
 from app.models.transaction import Transaction
 
-MODEL_PATH = Path(__file__).resolve().parents[1] / "models" / "scoring_model.pkl"
 SCORE_STORE_PATH = Path(__file__).resolve().parents[1] / "data" / "score_history.json"
-FEATURE_COLUMNS = [
-    'revenu_moyen',
-    'revenu_median',
-    'revenu_std',
-    'revenu_moyen_mensuel',
-    'ratio_depenses',
-    'score_depenses',
-    'ratio_epargne',
-    'solde_net',
-    'duree_retention_moyenne',
-    'regularite_revenus',
-    'nb_mois_actifs',
-    'freq_transactions_mois',
-    'nb_entrees',
-    'nb_sorties',
-]
 
-
-def _load_model():
-    if MODEL_PATH.exists():
-        return joblib.load(MODEL_PATH)
-    return None
-
-
-def _predict_from_model(features: dict) -> Optional[int]:
-    model = _load_model()
-    if model is None:
-        return None
-
-    values = [features.get(name, 0.0) for name in FEATURE_COLUMNS]
-    try:
-        df = pd.DataFrame([values], columns=FEATURE_COLUMNS)
-        prediction = model.predict(df)[0]
-        return int(max(300, min(850, round(prediction))))
-    except Exception:
-        return None
+def calculate_heuristic_score(features: dict) -> int:
+    """Calcul intelligent du score base sur des regles metier"""
+    base_score = 500
+    
+    # +100 pour la capacite d'epargne (10% = 10 pts, jusqu'a 100 max)
+    ratio_epargne = features.get("ratio_epargne", 0.0)
+    base_score += min(150, int(ratio_epargne * 1000))
+    
+    # -100 pour irregularite
+    regularite = features.get("regularite_revenus", 0.0)
+    if regularite > 0.5:
+        base_score -= 50
+    elif regularite > 0.8:
+        base_score -= 100
+    else:
+        base_score += 50
+        
+    # +100 pour revenus hauts
+    revenu = features.get("revenu_moyen_mensuel", 0.0)
+    if revenu > 1000000:
+        base_score += 150
+    elif revenu > 500000:
+        base_score += 100
+    elif revenu > 100000:
+        base_score += 50
+        
+    return int(max(300, min(850, base_score)))
 
 
 def infer_profile(features: dict) -> str:
@@ -63,15 +54,9 @@ def calculate_score(transactions: List[Transaction]) -> int:
     if not transactions:
         return 300
 
-    transaction_dicts = [tx.dict() for tx in transactions]
+    transaction_dicts = [tx.model_dump() if hasattr(tx, 'model_dump') else tx.dict() for tx in transactions]
     features = extract_features_from_transactions(transaction_dicts)
-    model_score = _predict_from_model(features)
-    if model_score is not None:
-        return model_score
-
-    total = sum(tx.montant for tx in transactions)
-    average_transaction = abs(total) / len(transactions)
-    return int(max(300, min(850, 850 - average_transaction)))
+    return calculate_heuristic_score(features)
 
 
 def _load_score_store() -> dict[str, int]:
@@ -95,6 +80,15 @@ def _save_score_store(store: dict[str, int]) -> None:
 
 def save_user_score(user_id: str, score: int, profile: str, features: dict) -> None:
     store = _load_score_store()
+    
+    # Recalcul de l'emprunt au moment de la sauvegarde pour s'assurer qu'il varie avec le score 
+    cap_emp = features.get('capacite_emprunt', 0.0)
+    rev = features.get('revenu_moyen_mensuel', 0.0)
+    
+    # Ajustement standard : on prête en moyenne 33% du revenu sur 12 mois multiplié par le % de credit score
+    cap_emp = rev * 0.33 * 12 * (score/850.0)
+    features['capacite_emprunt'] = float(cap_emp)
+    
     store[user_id] = {
         'score': score,
         'profile': profile,

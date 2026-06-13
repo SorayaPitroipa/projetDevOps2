@@ -1,86 +1,89 @@
 <div class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen">
-  <header class="bg-surface border-b border-outline-variant shadow-sm w-full z-50 fixed top-0">
-    <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto w-full">
-      <div class="flex items-center gap-sm">
-        <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold">W</div>
-        <span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">Wave Credit Score</span>
+  <header class="bg-surface border-b border-gray-200 shadow-sm w-full z-50 fixed top-0">
+    <div class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto w-full">
+      <div class="flex items-center gap-2">
+        <div class="h-8 w-8 rounded-full bg-[#ff6b00] flex items-center justify-center text-white font-bold text-lg">C</div>
+        <span class="text-2xl text-[#ff6b00] font-bold tracking-tight">CEquality</span>
       </div>
-      <div class="hidden md:flex items-center gap-md text-secondary">
-        <a routerLink="/upload" routerLinkActive="bg-primary-container text-on-primary-container" class="px-3 py-2 rounded-full hover:bg-surface-container-low transition-all duration-200">Upload</a>
-        <a routerLink="/score/user-123" routerLinkActive="bg-primary-container text-on-primary-container" class="px-3 py-2 rounded-full hover:bg-surface-container-low transition-all duration-200">Dashboard</a>
+      <div class="relative">
+        <div class="h-10 w-10 shadow-sm rounded-full border border-[#ff6b00]/30 bg-[#ff6b00]/10 flex items-center justify-center text-[#ff6b00] font-bold cursor-pointer hover:bg-[#ff6b00]/20 transition-colors" (click)="toggleUserOptions()">
+          {{ userInitials }}
+        </div>
+        <div *ngIf="userOptionsOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl py-1 border border-gray-100" style="z-index: 100;">
+          <button (click)="logout()" class="block w-full text-left px-4 py-2 text-sm text-red-600 font-medium hover:bg-red-50 transition-colors">Se déconnecter</button>
+        </div>
       </div>
     </div>
   </header>
 
   <div class="flex flex-1 pt-16">
-    <nav class="hidden md:flex flex-col gap-xs p-md h-[calc(100vh-4rem)] w-64 fixed left-0 top-16 bg-surface-bright border-r border-outline-variant">
-      <div class="mb-lg px-xs pt-sm">
-        <h2 class="font-headline-sm text-headline-sm font-bold text-primary">Wave Credit</h2>
-        <p class="font-body-sm text-body-sm text-on-surface-variant">Fintech Solutions</p>
+    <main class="flex-1 p-gutter bg-[#F9F9F9] min-h-[calc(100vh-4rem)]">
+      <div class="w-full max-w-container-max mx-auto mb-md">
+        <a routerLink="/upload" class="inline-flex items-center gap-xs text-on-surface-variant hover:text-primary bg-surface py-2 px-4 rounded-full border border-outline-variant shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 w-fit">
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+          <span class="font-label-lg font-semibold">Retour vers upload</span>
+        </a>
       </div>
-      <a routerLink="/upload" routerLinkActive="bg-primary-container text-on-primary-container" class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm transition-all hover:bg-surface-container-highest duration-200 active:translate-x-1">
-        <span class="material-symbols-outlined">upload_file</span>
-        <span class="font-body-md text-body-md">Upload</span>
-      </a>
-      <a routerLink="/score/user-123" routerLinkActive="bg-primary-container text-on-primary-container" class="flex items-center gap-md bg-primary-container text-on-primary-container rounded-lg px-md py-sm transition-all duration-200 shadow-sm relative overflow-hidden group">
-        <span class="material-symbols-outlined">dashboard</span>
-        <span class="font-body-md text-body-md font-bold">Tableau de bord</span>
-      </a>
-    </nav>
-
-    <main class="flex-1 md:ml-64 p-gutter bg-[#F9F9F9] min-h-[calc(100vh-4rem)]">
       <div class="w-full max-w-container-max mx-auto space-y-xl">
         <div class="flex flex-col lg:flex-row gap-xl">
           <div class="w-full lg:w-2/5 bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col items-center justify-center text-center">
             <h2 class="font-title-lg text-title-lg text-on-surface mb-lg">Votre Score de Crédit</h2>
             <div class="relative w-64 h-64 flex items-center justify-center mb-md">
               <svg class="w-full h-full transform -rotate-90" viewBox="0 0 220 220">
+                <defs>
+                  <linearGradient id="score-gradient" x1="100%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" stop-color="#ef4444" />
+                    <stop offset="50%" stop-color="#f59e0b" />
+                    <stop offset="100%" stop-color="#10b981" />
+                  </linearGradient>
+                </defs>
                 <circle cx="110" cy="110" fill="none" r="100" stroke="#F3F4F6" stroke-dasharray="471 628" stroke-dashoffset="0" stroke-width="16" transform="rotate(135 110 110)"></circle>
-                <circle class="opacity-80" cx="110" cy="110" fill="none" r="100" stroke="#EF4444" stroke-dasharray="157 628" stroke-dashoffset="0" stroke-width="16" transform="rotate(135 110 110)"></circle>
-                <circle class="opacity-80" cx="110" cy="110" fill="none" r="100" stroke="#F59E0B" stroke-dasharray="157 628" stroke-dashoffset="-157" stroke-width="16" transform="rotate(135 110 110)"></circle>
-                <circle class="opacity-80" cx="110" cy="110" fill="none" r="100" stroke="#10B981" stroke-dasharray="157 628" stroke-dashoffset="-314" stroke-width="16" transform="rotate(135 110 110)"></circle>
-                <circle cx="110" cy="110" fill="none" r="100" stroke="#FF6B00" stroke-dasharray="471 628" [attr.stroke-dashoffset]="scoreArcOffset" stroke-linecap="round" stroke-width="16" transform="rotate(135 110 110)"></circle>
+                <circle cx="110" cy="110" fill="none" r="100" stroke="url(#score-gradient)" stroke-dasharray="471 628" [attr.stroke-dashoffset]="scoreArcOffset" stroke-linecap="round" stroke-width="16" transform="rotate(135 110 110)"></circle>
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center pt-8">
                 <span class="font-display-lg text-display-lg text-on-surface">{{ score?.score ?? '---' }}</span>
                 <span class="font-label-md text-label-md text-on-surface-variant mt-1">{{ score ? (score.score >= 700 ? 'ÉVALUATION : BON' : score.score >= 650 ? 'ÉVALUATION : MOYEN' : 'ÉVALUATION : FAIBLE') : 'Chargement...' }}</span>
               </div>
             </div>
-            <p class="font-body-md text-body-md text-on-surface-variant mb-lg">Capacité d'emprunt estimée : <strong class="text-on-surface">450 000 FCFA</strong></p>
+            <p class="text-2xl text-on-surface-variant mb-lg">Capacité d'emprunt estimée : <strong class="text-on-surface text-3xl block mt-2">{{ score?.capacite_emprunt | number:'1.0-0':'fr-FR' }} FCFA</strong></p>
             <div class="w-full flex flex-col gap-sm">
               <button class="bg-wave-orange text-white font-title-lg text-title-lg py-sm px-lg rounded-lg flex items-center justify-center gap-xs hover:bg-opacity-90 transition-opacity">Obtenir un prêt</button>
+              <button (click)="downloadReport()" class="bg-[#10B981] text-white font-title-lg text-title-lg py-sm px-lg rounded-lg flex items-center justify-center gap-xs hover:bg-opacity-90 transition-opacity">
+                <span class="material-symbols-outlined">download</span>
+                Télécharger mon rapport
+              </button>
               <button class="bg-transparent border border-wave-orange text-wave-orange font-title-lg text-title-lg py-sm px-lg rounded-lg flex items-center justify-center gap-xs hover:bg-surface-container transition-colors">Partager mon score</button>
             </div>
           </div>
 
           <div class="w-full lg:w-3/5 grid grid-cols-1 sm:grid-cols-2 gap-lg">
-            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg">
-              <div class="flex items-center justify-between mb-2">
+            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col justify-between">
+              <div class="flex items-center justify-between w-full mb-2">
                 <p class="font-label-md text-label-md text-on-surface-variant">Revenu moyen</p>
                 <span [ngClass]="getBadgeClass(getBadgeStatus('income'))" class="rounded-full px-2 py-1 text-[12px] font-semibold">{{ getBadgeStatus('income') }}</span>
               </div>
-              <p class="font-title-lg text-title-lg font-bold">{{ revenuMoyen }}</p>
+              <p class="text-4xl text-[#2563EB] font-bold flex-1 flex items-center justify-center">{{ revenuMoyen }}</p>
             </div>
-            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg">
-              <div class="flex items-center justify-between mb-2">
+            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col justify-between">
+              <div class="flex items-center justify-between w-full mb-2">
                 <p class="font-label-md text-label-md text-on-surface-variant">Régularité</p>
                 <span [ngClass]="getBadgeClass(getBadgeStatus('regularity'))" class="rounded-full px-2 py-1 text-[12px] font-semibold">{{ getBadgeStatus('regularity') }}</span>
               </div>
-              <p class="font-title-lg text-title-lg font-bold">{{ regularityPercent }}%</p>
+              <p class="text-4xl text-[#10B981] font-bold flex-1 flex items-center justify-center">{{ regularityPercent }}%</p>
             </div>
-            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg">
-              <div class="flex items-center justify-between mb-2">
+            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col justify-between">
+              <div class="flex items-center justify-between w-full mb-2">
                 <p class="font-label-md text-label-md text-on-surface-variant">Ratio épargne</p>
                 <span [ngClass]="getBadgeClass(getBadgeStatus('savings'))" class="rounded-full px-2 py-1 text-[12px] font-semibold">{{ getBadgeStatus('savings') }}</span>
               </div>
-              <p class="font-title-lg text-title-lg font-bold">{{ savingRatio }}</p>
+              <p class="text-4xl text-[#8B5CF6] font-bold flex-1 flex items-center justify-center">{{ savingRatio }}</p>
             </div>
-            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg">
-              <div class="flex items-center justify-between mb-2">
+            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col justify-between">
+              <div class="flex items-center justify-between w-full mb-2">
                 <p class="font-label-md text-label-md text-on-surface-variant">Fréquence</p>
                 <span [ngClass]="getBadgeClass(getBadgeStatus('frequency'))" class="rounded-full px-2 py-1 text-[12px] font-semibold">{{ getBadgeStatus('frequency') }}</span>
               </div>
-              <p class="font-title-lg text-title-lg font-bold">{{ transactionFrequency }}</p>
+              <p class="text-4xl text-[#F59E0B] font-bold flex-1 flex items-center justify-center">{{ transactionFrequency }}</p>
             </div>
           </div>
         </div>

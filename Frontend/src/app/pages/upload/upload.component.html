@@ -1,61 +1,77 @@
 <div class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen">
-  <header class="bg-surface border-b border-outline-variant shadow-sm w-full z-50 fixed top-0">
-    <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto w-full">
-      <div class="flex items-center gap-sm">
-        <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold">W</div>
-        <span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">Wave Credit Score</span>
+  <header class="bg-surface border-b border-gray-200 shadow-sm w-full z-50 fixed top-0">
+    <div class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto w-full">
+      <div class="flex items-center gap-2">
+        <div class="h-8 w-8 rounded-full bg-[#ff6b00] flex items-center justify-center text-white font-bold text-lg">C</div>
+        <span class="text-2xl text-[#ff6b00] font-bold tracking-tight">CEquality</span>
+      </div>
+      <div class="relative">
+        <div class="h-10 w-10 shadow-sm rounded-full border border-[#ff6b00]/30 bg-[#ff6b00]/10 flex items-center justify-center text-[#ff6b00] font-bold cursor-pointer hover:bg-[#ff6b00]/20 transition-colors" (click)="toggleUserOptions()">
+          {{ userInitials }}
+        </div>
+        <div *ngIf="userOptionsOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl py-1 border border-gray-100" style="z-index: 100;">
+          <button (click)="logout()" class="block w-full text-left px-4 py-2 text-sm text-red-600 font-medium hover:bg-red-50 transition-colors">Se déconnecter</button>
+        </div>
       </div>
     </div>
   </header>
 
   <div class="flex flex-1 pt-16">
     <main class="flex-1 p-gutter flex items-center justify-center bg-[#F9F9F9] min-h-[calc(100vh-4rem)]">
-      <div class="w-full max-w-[600px]">
-        <div class="mb-xl text-center">
-          <h1 class="font-headline-md text-headline-md text-on-surface mb-xs">Importer un document</h1>
-          <p class="font-body-lg text-body-lg text-on-surface-variant">Téléchargez votre relevé pour obtenir votre score mis à jour.</p>
+      <div class="w-full max-w-[650px]">
+        <div class="mb-10 text-center">
+          <h1 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">Analyse de relevé</h1>
+          <p class="text-lg text-gray-500">Importez votre relevé Wave au format PDF pour calculer instantanément votre CEquality Score.</p>
         </div>
 
-        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-lg">
-          <label class="border-2 border-dashed border-outline-variant rounded-lg p-xxl text-center hover:border-primary transition-colors duration-200 cursor-pointer group flex flex-col items-center justify-center min-h-[300px] bg-surface-bright relative overflow-hidden"
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10 transition-all duration-300 hover:shadow-2xl">
+          <label [ngClass]="{'border-[#ff6b00] bg-[#ff6b00]/5': selectedFile, 'border-gray-200 bg-gray-50': !selectedFile}" 
+                 class="border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center min-h-[280px] transition-all duration-300 cursor-pointer group hover:border-[#ff6b00] hover:bg-[#ff6b00]/5 relative overflow-hidden"
                  (dragover)="onDragOver($event)"
                  (dragleave)="onDragLeave($event)"
                  (drop)="onDrop($event)">
-            <div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none"></div>
-            <div class="bg-surface-container-high p-sm rounded-full mb-md group-hover:scale-110 transition-transform duration-300">
-              <span class="material-symbols-outlined text-[48px] text-primary" style="font-variation-settings: 'FILL' 1;">cloud_upload</span>
-            </div>
-            <h3 class="font-title-lg text-title-lg text-on-surface mb-sm px-md">
-              <span *ngIf="!selectedFile">Glissez votre relevé Wave ici ou cliquez pour importer</span>
-              <span *ngIf="selectedFile" class="font-semibold text-primary">{{ selectedFile.name }}</span>
-            </h3>
-            <div class="mt-sm flex flex-col items-center gap-3">
-              <span class="inline-flex items-center gap-base px-sm py-1 bg-surface-container rounded-full border border-outline-variant font-label-md text-label-md text-on-surface-variant">
-                <span class="material-symbols-outlined text-[14px]">picture_as_pdf</span>
+            
+            <!-- Fond animé au survol (quand vide) -->
+            <div *ngIf="!selectedFile" class="absolute inset-0 bg-gradient-to-br from-transparent to-[#ff6b00]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            
+            <div *ngIf="!selectedFile" class="flex flex-col items-center">
+              <div class="bg-white p-4 rounded-full shadow-sm mb-6 group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
+                <span class="material-symbols-outlined text-[56px] text-[#ff6b00]" style="font-variation-settings: 'FILL' 1;">cloud_upload</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-2">Glissez votre relevé ici</h3>
+              <p class="text-gray-500 mb-6 text-center">ou cliquez pour parcourir vos fichiers</p>
+              <span class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-600">
+                <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
                 PDF uniquement
               </span>
-              <span *ngIf="selectedFile" class="font-body-sm text-on-surface-variant">Fichier chargé avec succès</span>
             </div>
+
+            <div *ngIf="selectedFile" class="flex flex-col items-center">
+              <div class="bg-white p-4 rounded-full shadow-md mb-6 animate-bounce">
+                <span class="material-symbols-outlined text-[56px] text-green-500" style="font-variation-settings: 'FILL' 1;">task</span>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-800 mb-2 text-center">{{ selectedFile.name }}</h3>
+              <p class="text-green-600 font-medium bg-green-50 px-4 py-2 rounded-full mt-2">Prêt pour l'analyse</p>
+              <p class="text-gray-400 text-sm mt-6 underline decoration-dashed hover:text-gray-600">Cliquez ou glissez pour remplacer</p>
+            </div>
+
             <input accept=".pdf" class="hidden" type="file" (change)="onFileSelected($event)" />
           </label>
 
-          <div class="mt-lg text-center">
-            <p *ngIf="analysisReady && !uploading" class="text-on-surface-variant font-body-sm mb-4">Relevé importé. Cliquez sur "Analyser" pour démarrer l’analyse.</p>
+          <div class="mt-8 flex items-center justify-center gap-2 text-green-700 font-medium text-sm px-4 py-3 bg-green-50 rounded-xl border border-green-100">
+            <span class="material-symbols-outlined text-[20px]">verified_user</span>
+            <span>Analyse 100% locale, sécurisée et confidentielle.</span>
           </div>
 
-          <div class="mt-lg flex items-center justify-center gap-xs text-on-surface-variant font-body-sm text-body-sm px-md text-center bg-surface-container-low py-sm rounded-md border border-outline-variant/50">
-            <span class="material-symbols-outlined text-primary text-[18px]">gpp_good</span>
-            <span class="material-symbols-outlined text-primary text-[18px]">lock</span>
-            <span>Votre relevé Wave est analysé localement et en toute sécurité</span>
-          </div>
-
-          <div *ngIf="selectedFile" class="mt-lg text-center">
-            <button class="w-full bg-primary-container text-on-secondary font-title-lg text-title-lg py-md px-lg rounded-lg shadow-sm hover:bg-primary transition-colors duration-200 flex items-center justify-center gap-xs active:scale-[0.98]"
+          <div *ngIf="selectedFile" class="mt-8 text-center animate-fade-in-up">
+            <button class="w-full bg-gradient-to-r from-[#ff6b00] to-[#e65c00] text-white font-bold text-xl py-4 px-8 rounded-2xl shadow-lg hover:shadow-[#ff6b00]/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3"
                     [disabled]="uploading" (click)="uploadStatement()">
-              <span *ngIf="!uploading">Analyser</span>
-              <span *ngIf="uploading" class="flex items-center gap-xs">
-                <span class="material-symbols-outlined animate-spin">autorenew</span>
-                Analyse en cours...
+              <span *ngIf="!uploading" class="material-symbols-outlined text-[24px]">analytics</span>
+              <span *ngIf="!uploading">Calculer mon CEquality Score</span>
+              
+              <span *ngIf="uploading" class="flex items-center gap-3">
+                <span class="material-symbols-outlined animate-spin text-[24px]">autorenew</span>
+                Analyse IA en cours...
               </span>
             </button>
           </div>

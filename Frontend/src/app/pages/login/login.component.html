@@ -1,0 +1,83 @@
+<div class="min-h-screen bg-[#f8fafc] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="flex items-center justify-center gap-2 mb-6">
+      <div class="h-12 w-12 rounded-full bg-[#ff6b00] flex items-center justify-center text-white font-bold text-2xl">C</div>
+      <span class="text-3xl text-[#ff6b00] font-bold tracking-tight">CEquality</span>
+    </div>
+    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+      Connexion à votre compte
+    </h2>
+    <p class="mt-2 text-center text-sm text-gray-600">
+      Ou
+      <a href="#" class="font-medium text-[#ff6b00] hover:text-[#e65c00]">
+        créez un nouveau compte
+      </a>
+    </p>
+  </div>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-8 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-gray-100">
+      <form class="space-y-6" (ngSubmit)="onLogin($event)">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">
+            Adresse email
+          </label>
+          <div class="mt-1">
+            <input id="email" name="email" type="email" autocomplete="email" required
+                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#ff6b00] focus:border-[#ff6b00] sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            Mot de passe
+          </label>
+          <div class="mt-1">
+            <input id="password" name="password" type="password" autocomplete="current-password" required
+                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#ff6b00] focus:border-[#ff6b00] sm:text-sm">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input id="remember-me" name="remember-me" type="checkbox"
+                   class="h-4 w-4 text-[#ff6b00] focus:ring-[#ff6b00] border-gray-300 rounded">
+            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+              Se souvenir de moi
+            </label>
+          </div>
+
+          <div class="text-sm">
+            <a href="#" class="font-medium text-[#ff6b00] hover:text-[#e65c00]">
+              Mot de passe oublié ?
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <button type="submit"
+                  class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#ff6b00] hover:bg-[#e65c00] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff6b00] transition-colors">
+            Se connecter
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-6">
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">
+              Ou continuer avec
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-center">
+          <asl-google-signin-button type="standard" size="large" width="350"></asl-google-signin-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

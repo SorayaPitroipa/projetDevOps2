@@ -21,6 +21,7 @@ export interface ScoreResult {
   regularite_revenus: number;
   ratio_epargne: number;
   freq_transactions_mois: number;
+  capacite_emprunt: number;
 }
 
 @Injectable({

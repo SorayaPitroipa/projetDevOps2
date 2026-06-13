@@ -1,14 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService, UploadResponse } from '../../services/api.service';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-upload',
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.css']
 })
-export class UploadComponent {
+export class UploadComponent implements OnInit {
   selectedFile: File | null = null;
   dragActive = false;
   uploading = false;
@@ -16,8 +17,35 @@ export class UploadComponent {
   errorMessage = '';
   successMessage = '';
   analysisReady = false;
+  userInitials: string = '';
+  userOptionsOpen: boolean = false;
 
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(private apiService: ApiService, private router: Router, private authService: SocialAuthService) {}
+
+  ngOnInit() {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      const f = user.firstName || '';
+      const l = user.lastName || '';
+      this.userInitials = (f[0] || '') + (l[0] || '');
+      if (!this.userInitials && user.name) {
+        this.userInitials = user.name.substring(0, 2).toUpperCase();
+      }
+    } else {
+      this.userInitials = 'U';
+    }
+  }
+
+  logout() {
+    this.authService.signOut().catch(() => {});
+    localStorage.removeItem('user');
+    this.router.navigate(['/login']);
+  }
+  
+  toggleUserOptions() {
+    this.userOptionsOpen = !this.userOptionsOpen;
+  }
 
   onFileSelected(event: Event): void {
     const element = event.target as HTMLInputElement;
