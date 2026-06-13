@@ -35,20 +35,6 @@ jobs:
     name: Test backend
     runs-on: ubuntu-latest
     needs: security
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: cloud_projet
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
@@ -62,9 +48,6 @@ jobs:
           python -m pip install -r requirements.txt
       - name: Tests
         working-directory: Backend
-        env:
-          DATABASE_URL: postgresql://user:password@localhost:5432/cloud_projet
-          JWT_SECRET: testing_secret
         run: python -m pytest -q
 
   build-frontend:
