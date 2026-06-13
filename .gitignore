@@ -53,3 +53,4 @@ logs/
 
 # --- Artefacts de QA (captures d'écran de dev) ---
 frontend/screenshots/
+.env.example
