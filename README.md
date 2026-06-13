@@ -1,4 +1,4 @@
-# Wave Credit Score - Projet Cloud & DevOps
+# CEquality (Credit Equality) - Projet Cloud & DevOps
 
 ## 1. Vue d'ensemble
 

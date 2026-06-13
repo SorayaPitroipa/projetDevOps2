@@ -6,13 +6,13 @@ services:
     container_name: credit_scoring_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: adminpassword
-      POSTGRES_DB: cloud_projet
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-adminpassword}
+      POSTGRES_DB: ${POSTGRES_DB:-cloud_projet}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d cloud_projet"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-cloud_projet}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,9 +25,15 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://admin:adminpassword@db:5432/cloud_projet
-      - JWT_SECRET=test_dev_secret_key_123
-      - GOOGLE_CLIENT_ID=427864624619-tajh634d1rr6o82aqt8p60cos5bin4ge.apps.googleusercontent.com
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-adminpassword}@db:5432/${POSTGRES_DB:-cloud_projet}
+      - JWT_SECRET=${JWT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
+      - MODEL_S3_KEY=${MODEL_S3_KEY}
+      - MODEL_S3_BUCKET=${MODEL_S3_BUCKET}
     depends_on:
       db:
         condition: service_healthy
@@ -35,6 +41,9 @@ services:
   frontend:
     build:
       context: ./Frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
     container_name: credit_scoring_frontend
     restart: unless-stopped
     ports:
