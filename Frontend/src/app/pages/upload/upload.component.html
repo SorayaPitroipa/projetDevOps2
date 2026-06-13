@@ -5,30 +5,11 @@
         <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold">W</div>
         <span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">Wave Credit Score</span>
       </div>
-      <div class="hidden md:flex items-center gap-md text-secondary">
-        <a routerLink="/upload" routerLinkActive="bg-primary-container text-on-primary-container" class="px-3 py-2 rounded-full hover:bg-surface-container-low transition-all duration-200">Upload</a>
-        <a routerLink="/score/user-123" routerLinkActive="bg-primary-container text-on-primary-container" class="px-3 py-2 rounded-full hover:bg-surface-container-low transition-all duration-200">Dashboard</a>
-      </div>
     </div>
   </header>
 
   <div class="flex flex-1 pt-16">
-    <nav class="hidden md:flex flex-col gap-xs p-md h-[calc(100vh-4rem)] w-64 fixed left-0 top-16 bg-surface-bright border-r border-outline-variant">
-      <div class="mb-xl px-xs">
-        <h2 class="font-headline-sm text-headline-sm font-bold text-primary">Wave Credit</h2>
-        <p class="font-body-sm text-body-sm text-on-surface-variant">Fintech Solutions</p>
-      </div>
-      <a routerLink="/upload" routerLinkActive="bg-primary-container text-on-primary-container" class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm transition-all hover:bg-surface-container-highest active:translate-x-1 duration-200">
-        <span class="material-symbols-outlined">upload_file</span>
-        <span class="font-body-md text-body-md">Upload</span>
-      </a>
-      <a routerLink="/score/user-123" routerLinkActive="bg-primary-container text-on-primary-container" class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm transition-all hover:bg-surface-container-highest active:translate-x-1 duration-200">
-        <span class="material-symbols-outlined">dashboard</span>
-        <span class="font-body-md text-body-md">Tableau de bord</span>
-      </a>
-    </nav>
-
-    <main class="flex-1 md:ml-64 p-gutter flex items-center justify-center bg-[#F9F9F9] min-h-[calc(100vh-4rem)]">
+    <main class="flex-1 p-gutter flex items-center justify-center bg-[#F9F9F9] min-h-[calc(100vh-4rem)]">
       <div class="w-full max-w-[600px]">
         <div class="mb-xl text-center">
           <h1 class="font-headline-md text-headline-md text-on-surface mb-xs">Importer un document</h1>
@@ -44,32 +25,39 @@
             <div class="bg-surface-container-high p-sm rounded-full mb-md group-hover:scale-110 transition-transform duration-300">
               <span class="material-symbols-outlined text-[48px] text-primary" style="font-variation-settings: 'FILL' 1;">cloud_upload</span>
             </div>
-            <h3 class="font-title-lg text-title-lg text-on-surface mb-sm px-md">Glissez votre relevé Wave ici ou cliquez pour importer</h3>
-            <div class="mt-sm">
+            <h3 class="font-title-lg text-title-lg text-on-surface mb-sm px-md">
+              <span *ngIf="!selectedFile">Glissez votre relevé Wave ici ou cliquez pour importer</span>
+              <span *ngIf="selectedFile" class="font-semibold text-primary">{{ selectedFile.name }}</span>
+            </h3>
+            <div class="mt-sm flex flex-col items-center gap-3">
               <span class="inline-flex items-center gap-base px-sm py-1 bg-surface-container rounded-full border border-outline-variant font-label-md text-label-md text-on-surface-variant">
                 <span class="material-symbols-outlined text-[14px]">picture_as_pdf</span>
                 PDF uniquement
               </span>
+              <span *ngIf="selectedFile" class="font-body-sm text-on-surface-variant">Fichier chargé avec succès</span>
             </div>
             <input accept=".pdf" class="hidden" type="file" (change)="onFileSelected($event)" />
           </label>
 
           <div class="mt-lg text-center">
-            <p *ngIf="selectedFile" class="text-on-surface font-body-md mb-2">Fichier sélectionné : <span class="font-semibold">{{ selectedFile.name }}</span></p>
             <p *ngIf="analysisReady && !uploading" class="text-on-surface-variant font-body-sm mb-4">Relevé importé. Cliquez sur "Analyser" pour démarrer l’analyse.</p>
-
-            <button class="w-full bg-primary-container text-on-secondary font-title-lg text-title-lg py-md px-lg rounded-lg shadow-sm hover:bg-primary transition-colors duration-200 flex items-center justify-center gap-xs active:scale-[0.98]"
-                    [disabled]="uploading || !selectedFile" (click)="uploadStatement()">
-              <span *ngIf="!uploading" class="material-symbols-outlined">upload</span>
-              <span *ngIf="uploading" class="material-symbols-outlined animate-spin">autorenew</span>
-              {{ uploading ? 'Analyse en cours...' : analysisReady ? 'Analyser le relevé Wave' : 'Importer mon relevé Wave (PDF)' }}
-            </button>
           </div>
 
           <div class="mt-lg flex items-center justify-center gap-xs text-on-surface-variant font-body-sm text-body-sm px-md text-center bg-surface-container-low py-sm rounded-md border border-outline-variant/50">
             <span class="material-symbols-outlined text-primary text-[18px]">gpp_good</span>
             <span class="material-symbols-outlined text-primary text-[18px]">lock</span>
             <span>Votre relevé Wave est analysé localement et en toute sécurité</span>
+          </div>
+
+          <div *ngIf="selectedFile" class="mt-lg text-center">
+            <button class="w-full bg-primary-container text-on-secondary font-title-lg text-title-lg py-md px-lg rounded-lg shadow-sm hover:bg-primary transition-colors duration-200 flex items-center justify-center gap-xs active:scale-[0.98]"
+                    [disabled]="uploading" (click)="uploadStatement()">
+              <span *ngIf="!uploading">Analyser</span>
+              <span *ngIf="uploading" class="flex items-center gap-xs">
+                <span class="material-symbols-outlined animate-spin">autorenew</span>
+                Analyse en cours...
+              </span>
+            </button>
           </div>
 
           <div *ngIf="errorMessage" class="mt-lg text-center text-[#ba1a1a] font-body-md">{{ errorMessage }}</div>
