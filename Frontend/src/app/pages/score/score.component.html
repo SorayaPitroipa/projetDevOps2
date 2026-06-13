@@ -1,0 +1,156 @@
+<div class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen">
+  <header class="bg-surface border-b border-outline-variant shadow-sm w-full z-50 fixed top-0">
+    <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto w-full">
+      <div class="flex items-center gap-sm">
+        <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold">W</div>
+        <span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">Wave Credit Score</span>
+      </div>
+      <div class="hidden md:flex items-center gap-md text-secondary">
+        <a routerLink="/upload" routerLinkActive="bg-primary-container text-on-primary-container" class="px-3 py-2 rounded-full hover:bg-surface-container-low transition-all duration-200">Upload</a>
+        <a routerLink="/score/user-123" routerLinkActive="bg-primary-container text-on-primary-container" class="px-3 py-2 rounded-full hover:bg-surface-container-low transition-all duration-200">Dashboard</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex flex-1 pt-16">
+    <nav class="hidden md:flex flex-col gap-xs p-md h-[calc(100vh-4rem)] w-64 fixed left-0 top-16 bg-surface-bright border-r border-outline-variant">
+      <div class="mb-lg px-xs pt-sm">
+        <h2 class="font-headline-sm text-headline-sm font-bold text-primary">Wave Credit</h2>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Fintech Solutions</p>
+      </div>
+      <a routerLink="/upload" routerLinkActive="bg-primary-container text-on-primary-container" class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm transition-all hover:bg-surface-container-highest duration-200 active:translate-x-1">
+        <span class="material-symbols-outlined">upload_file</span>
+        <span class="font-body-md text-body-md">Upload</span>
+      </a>
+      <a routerLink="/score/user-123" routerLinkActive="bg-primary-container text-on-primary-container" class="flex items-center gap-md bg-primary-container text-on-primary-container rounded-lg px-md py-sm transition-all duration-200 shadow-sm relative overflow-hidden group">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="font-body-md text-body-md font-bold">Tableau de bord</span>
+      </a>
+    </nav>
+
+    <main class="flex-1 md:ml-64 p-gutter bg-[#F9F9F9] min-h-[calc(100vh-4rem)]">
+      <div class="w-full max-w-container-max mx-auto space-y-xl">
+        <div class="flex flex-col lg:flex-row gap-xl">
+          <div class="w-full lg:w-2/5 bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col items-center justify-center text-center">
+            <h2 class="font-title-lg text-title-lg text-on-surface mb-lg">Votre Score de Crédit</h2>
+            <div class="relative w-64 h-64 flex items-center justify-center mb-md">
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 220 220">
+                <circle cx="110" cy="110" fill="none" r="100" stroke="#F3F4F6" stroke-dasharray="471 628" stroke-dashoffset="0" stroke-width="16" transform="rotate(135 110 110)"></circle>
+                <circle class="opacity-80" cx="110" cy="110" fill="none" r="100" stroke="#EF4444" stroke-dasharray="157 628" stroke-dashoffset="0" stroke-width="16" transform="rotate(135 110 110)"></circle>
+                <circle class="opacity-80" cx="110" cy="110" fill="none" r="100" stroke="#F59E0B" stroke-dasharray="157 628" stroke-dashoffset="-157" stroke-width="16" transform="rotate(135 110 110)"></circle>
+                <circle class="opacity-80" cx="110" cy="110" fill="none" r="100" stroke="#10B981" stroke-dasharray="157 628" stroke-dashoffset="-314" stroke-width="16" transform="rotate(135 110 110)"></circle>
+                <circle cx="110" cy="110" fill="none" r="100" stroke="#FF6B00" stroke-dasharray="471 628" [attr.stroke-dashoffset]="scoreArcOffset" stroke-linecap="round" stroke-width="16" transform="rotate(135 110 110)"></circle>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center pt-8">
+                <span class="font-display-lg text-display-lg text-on-surface">{{ score?.score ?? '---' }}</span>
+                <span class="font-label-md text-label-md text-on-surface-variant mt-1">{{ score ? (score.score >= 700 ? 'ÉVALUATION : BON' : score.score >= 650 ? 'ÉVALUATION : MOYEN' : 'ÉVALUATION : FAIBLE') : 'Chargement...' }}</span>
+              </div>
+            </div>
+            <p class="font-body-md text-body-md text-on-surface-variant mb-lg">Capacité d'emprunt estimée : <strong class="text-on-surface">450 000 FCFA</strong></p>
+            <div class="w-full flex flex-col gap-sm">
+              <button class="bg-wave-orange text-white font-title-lg text-title-lg py-sm px-lg rounded-lg flex items-center justify-center gap-xs hover:bg-opacity-90 transition-opacity">Obtenir un prêt</button>
+              <button class="bg-transparent border border-wave-orange text-wave-orange font-title-lg text-title-lg py-sm px-lg rounded-lg flex items-center justify-center gap-xs hover:bg-surface-container transition-colors">Partager mon score</button>
+            </div>
+          </div>
+
+          <div class="w-full lg:w-3/5 grid grid-cols-1 sm:grid-cols-2 gap-lg">
+            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg">
+              <div class="flex items-center justify-between mb-2">
+                <p class="font-label-md text-label-md text-on-surface-variant">Revenu moyen</p>
+                <span [ngClass]="getBadgeClass(getBadgeStatus('income'))" class="rounded-full px-2 py-1 text-[12px] font-semibold">{{ getBadgeStatus('income') }}</span>
+              </div>
+              <p class="font-title-lg text-title-lg font-bold">{{ revenuMoyen }}</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg">
+              <div class="flex items-center justify-between mb-2">
+                <p class="font-label-md text-label-md text-on-surface-variant">Régularité</p>
+                <span [ngClass]="getBadgeClass(getBadgeStatus('regularity'))" class="rounded-full px-2 py-1 text-[12px] font-semibold">{{ getBadgeStatus('regularity') }}</span>
+              </div>
+              <p class="font-title-lg text-title-lg font-bold">{{ regularityPercent }}%</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg">
+              <div class="flex items-center justify-between mb-2">
+                <p class="font-label-md text-label-md text-on-surface-variant">Ratio épargne</p>
+                <span [ngClass]="getBadgeClass(getBadgeStatus('savings'))" class="rounded-full px-2 py-1 text-[12px] font-semibold">{{ getBadgeStatus('savings') }}</span>
+              </div>
+              <p class="font-title-lg text-title-lg font-bold">{{ savingRatio }}</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg">
+              <div class="flex items-center justify-between mb-2">
+                <p class="font-label-md text-label-md text-on-surface-variant">Fréquence</p>
+                <span [ngClass]="getBadgeClass(getBadgeStatus('frequency'))" class="rounded-full px-2 py-1 text-[12px] font-semibold">{{ getBadgeStatus('frequency') }}</span>
+              </div>
+              <p class="font-title-lg text-title-lg font-bold">{{ transactionFrequency }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="loading" class="bg-surface-container-lowest rounded-xl border border-outline-variant p-lg text-center font-body-lg">Chargement des données...</div>
+        <div *ngIf="errorMessage" class="bg-error-container rounded-xl border border-error p-lg text-center font-body-lg text-error">{{ errorMessage }}</div>
+        <div *ngIf="score" class="bg-surface-container-lowest rounded-xl border border-outline-variant p-lg">
+          <div class="flex items-center justify-between flex-col sm:flex-row gap-4">
+            <div>
+              <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-[0.16em]">Détails de l'évaluation</p>
+            </div>
+            <span class="rounded-full bg-surface-container-high px-md py-2 font-label-md text-label-md text-on-surface-variant">Niveau de risque : {{ score.risk_level }}</span>
+          </div>
+
+          <div class="mt-lg bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg">
+            <h3 class="font-title-lg text-title-lg text-on-surface mb-lg">Détails de l'évaluation</h3>
+            <div class="space-y-md">
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Régularité des revenus</span>
+                  <span class="font-body-sm text-body-sm font-semibold text-on-surface">85/100</span>
+                </div>
+                <div class="w-full bg-surface-variant rounded-full h-2">
+                  <div class="bg-[#10B981] h-2 rounded-full" style="width: 85%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Capacité d'épargne</span>
+                  <span class="font-body-sm text-body-sm font-semibold text-on-surface">72/100</span>
+                </div>
+                <div class="w-full bg-surface-variant rounded-full h-2">
+                  <div class="bg-[#F59E0B] h-2 rounded-full" style="width: 72%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Maîtrise des dépenses</span>
+                  <span class="font-body-sm text-body-sm font-semibold text-on-surface">68/100</span>
+                </div>
+                <div class="w-full bg-surface-variant rounded-full h-2">
+                  <div class="bg-[#F59E0B] h-2 rounded-full" style="width: 68%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Rétention des fonds</span>
+                  <span class="font-body-sm text-body-sm font-semibold text-on-surface">90/100</span>
+                </div>
+                <div class="w-full bg-surface-variant rounded-full h-2">
+                  <div class="bg-[#10B981] h-2 rounded-full" style="width: 90%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Fréquence d'activité</span>
+                  <span class="font-body-sm text-body-sm font-semibold text-on-surface">78/100</span>
+                </div>
+                <div class="w-full bg-surface-variant rounded-full h-2">
+                  <div class="bg-[#10B981] h-2 rounded-full" style="width: 78%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

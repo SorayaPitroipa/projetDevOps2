@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Score Dashboard - Wave Credit Score</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#ff6b00",
+                        "surface-container-high": "#fee3d8",
+                        "surface-bright": "#fff8f6",
+                        "surface-dim": "#efd5ca",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#001d35",
+                        "outline-variant": "#e2bfb0",
+                        "background": "#fff8f6",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#ffb693",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#9ccaff",
+                        "primary-fixed": "#ffdbcc",
+                        "surface-tint": "#a04100",
+                        "primary": "#a04100",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary-fixed": "#351000",
+                        "surface-container-highest": "#f8ddd2",
+                        "tertiary": "#0062a1",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-container": "#003357",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#ffede6",
+                        "secondary-container": "#e2dfde",
+                        "on-surface": "#261812",
+                        "on-secondary-container": "#636262",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#5a4136",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-surface": "#3d2d26",
+                        "secondary": "#5f5e5e",
+                        "primary-fixed-dim": "#ffb693",
+                        "surface-container": "#ffeae1",
+                        "on-primary-fixed-variant": "#7a3000",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#572000",
+                        "surface": "#fff8f6",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#8e7164",
+                        "tertiary-fixed": "#d0e4ff",
+                        "surface-container-low": "#fff1eb",
+                        "on-tertiary-fixed-variant": "#00497b",
+                        "secondary-fixed": "#e5e2e1",
+                        "tertiary-container": "#059eff",
+                        "surface-variant": "#f8ddd2",
+                        "on-background": "#261812"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1200px",
+                        "xl": "32px",
+                        "xxl": "48px",
+                        "sm": "12px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "title-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "title-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-sm": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-md": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .card-shadow { box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .bg-wave-orange { background-color: #FF6B00; }
+        .text-wave-orange { color: #FF6B00; }
+        .border-wave-orange { border-color: #FF6B00; }
+        .gauge-arc { stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 1.5s ease-out; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-bright dark:bg-surface-dim h-screen w-64 fixed left-0 top-16 border-r border-outline-variant flex flex-col gap-xs p-md z-20">
+<div class="mb-lg">
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">Wave Credit</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Fintech Solutions</p>
+</div>
+<a aria-current="page" class="flex items-center gap-md bg-primary-container text-on-primary-container rounded-lg px-md py-sm transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Tableau de bord</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm transition-all hover:bg-surface-container-highest dark:hover:bg-secondary-fixed transition-colors active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-body-md text-body-md">Analyse</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high rounded-lg px-md py-sm transition-all hover:bg-surface-container-highest dark:hover:bg-secondary-fixed transition-colors active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+<span class="font-body-md text-body-md">Upload</span>
+</a>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col pl-64 w-full">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface-container-highest docked full-width top-0 border-b border-outline-variant dark:border-secondary-fixed-dim shadow-sm flex justify-between items-center h-16 px-gutter mx-auto w-full z-10 sticky">
+<div class="flex items-center">
+<span class="font-display-lg text-headline-sm text-primary-container dark:text-primary-fixed-dim font-bold">Wave Credit Score</span>
+</div>
+<div class="flex items-center gap-md text-secondary">
+<button class="hover:bg-surface-container-low dark:hover:bg-secondary-fixed-dim transition-all active:scale-95 duration-150 p-xs rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:bg-surface-container-low dark:hover:bg-secondary-fixed-dim transition-all active:scale-95 duration-150 p-xs rounded-full">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="hover:bg-surface-container-low dark:hover:bg-secondary-fixed-dim transition-all active:scale-95 duration-150 p-xs rounded-full">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<main class="flex-1 overflow-y-auto p-gutter">
+<div class="max-w-container-max mx-auto space-y-xl">
+<!-- Top Section: Gauge & Metric Grid -->
+<div class="flex flex-col lg:flex-row gap-xl">
+<!-- Left Column (40%) -->
+<div class="w-full lg:w-2/5 bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col items-center justify-center text-center">
+<h2 class="font-title-lg text-title-lg text-on-surface mb-lg">Votre Score de Crédit</h2>
+<!-- SVG Gauge -->
+<div class="relative w-64 h-64 flex items-center justify-center mb-md">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 220 220">
+<!-- Background Arc -->
+<circle cx="110" cy="110" fill="none" r="100" stroke="#F3F4F6" stroke-dasharray="471 628" stroke-dashoffset="0" stroke-width="16" transform="rotate(135 110 110)"></circle>
+<!-- Zone Markers (Visual representation) -->
+<circle class="opacity-80" cx="110" cy="110" fill="none" r="100" stroke="#EF4444" stroke-dasharray="157 628" stroke-dashoffset="0" stroke-width="16" transform="rotate(135 110 110)"></circle> <!-- Red: 300-500 -->
+<circle class="opacity-80" cx="110" cy="110" fill="none" r="100" stroke="#F59E0B" stroke-dasharray="157 628" stroke-dashoffset="-157" stroke-width="16" transform="rotate(135 110 110)"></circle> <!-- Orange: 500-700 -->
+<circle class="opacity-80" cx="110" cy="110" fill="none" r="100" stroke="#10B981" stroke-dasharray="157 628" stroke-dashoffset="-314" stroke-width="16" transform="rotate(135 110 110)"></circle> <!-- Green: 700-850 -->
+<!-- Active Score Arc (Calculated for score 715) -->
+<circle cx="110" cy="110" fill="none" id="score-arc" r="100" stroke="#FF6B00" stroke-dasharray="471 628" stroke-dashoffset="471" stroke-linecap="round" stroke-width="16" style="transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);" transform="rotate(135 110 110)"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center pt-8">
+<span class="font-display-lg text-display-lg text-on-surface">715</span>
+<span class="font-label-md text-label-md text-on-surface-variant mt-1">ÉVALUATION: BON</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg">Capacité d'emprunt estimée : <strong class="text-on-surface">450 000 FCFA</strong></p>
+<div class="w-full flex flex-col gap-sm">
+<button class="bg-wave-orange text-white font-title-lg text-title-lg py-sm px-lg rounded-lg flex items-center justify-center gap-xs hover:bg-opacity-90 transition-opacity">
+<span>Obtenir un prêt</span>
+<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
+</button>
+<button class="bg-transparent border border-wave-orange text-wave-orange font-title-lg text-title-lg py-sm px-lg rounded-lg flex items-center justify-center gap-xs hover:bg-surface-container transition-colors">
+<span>Partager mon score</span>
+<span class="material-symbols-outlined text-[20px]" data-icon="share">share</span>
+</button>
+</div>
+</div>
+<!-- Right Column (60%) -->
+<div class="w-full lg:w-3/5 grid grid-cols-1 sm:grid-cols-2 gap-lg">
+<!-- Metric 1 -->
+<div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<div class="bg-surface-container p-sm rounded-full text-wave-orange">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+</div>
+<span class="bg-[rgba(16,185,129,0.1)] text-[#10B981] font-label-md text-label-md px-sm py-1 rounded-full">Excellent</span>
+</div>
+<div>
+<h3 class="font-body-sm text-body-sm text-on-surface-variant mb-1">Revenu moyen mensuel</h3>
+<p class="font-headline-sm text-headline-sm text-on-surface">Stable &amp; Élevé</p>
+</div>
+</div>
+<!-- Metric 2 -->
+<div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<div class="bg-surface-container p-sm rounded-full text-wave-orange">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+</div>
+<span class="bg-[rgba(245,158,11,0.1)] text-[#F59E0B] font-label-md text-label-md px-sm py-1 rounded-full">Bon</span>
+</div>
+<div>
+<h3 class="font-body-sm text-body-sm text-on-surface-variant mb-1">Régularité des entrées</h3>
+<p class="font-headline-sm text-headline-sm text-on-surface">Constante</p>
+</div>
+</div>
+<!-- Metric 3 -->
+<div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<div class="bg-surface-container p-sm rounded-full text-wave-orange">
+<span class="material-symbols-outlined" data-icon="savings">savings</span>
+</div>
+<span class="bg-[rgba(245,158,11,0.1)] text-[#F59E0B] font-label-md text-label-md px-sm py-1 rounded-full">Bon</span>
+</div>
+<div>
+<h3 class="font-body-sm text-body-sm text-on-surface-variant mb-1">Ratio épargne/dépenses</h3>
+<p class="font-headline-sm text-headline-sm text-on-surface">Équilibré</p>
+</div>
+</div>
+<!-- Metric 4 -->
+<div class="bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<div class="bg-surface-container p-sm rounded-full text-wave-orange">
+<span class="material-symbols-outlined" data-icon="local_activity">local_activity</span>
+</div>
+<span class="bg-[rgba(239,68,68,0.1)] text-[#EF4444] font-label-md text-label-md px-sm py-1 rounded-full">À améliorer</span>
+</div>
+<div>
+<h3 class="font-body-sm text-body-sm text-on-surface-variant mb-1">Fréquence des transactions</h3>
+<p class="font-headline-sm text-headline-sm text-on-surface">Épisodique</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Breakdown Details -->
+<div class="w-full bg-surface-container-lowest rounded-xl border border-secondary-container card-shadow p-lg">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-lg">Détails de l'évaluation</h3>
+<div class="space-y-md">
+<!-- Breakdown Item -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Régularité des revenus</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">85/100</span>
+</div>
+<div class="w-full bg-surface-variant rounded-full h-2">
+<div class="bg-[#10B981] h-2 rounded-full" style="width: 85%"></div>
+</div>
+</div>
+<!-- Breakdown Item -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Capacité d'épargne</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">72/100</span>
+</div>
+<div class="w-full bg-surface-variant rounded-full h-2">
+<div class="bg-[#F59E0B] h-2 rounded-full" style="width: 72%"></div>
+</div>
+</div>
+<!-- Breakdown Item -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Maîtrise des dépenses</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">68/100</span>
+</div>
+<div class="w-full bg-surface-variant rounded-full h-2">
+<div class="bg-[#F59E0B] h-2 rounded-full" style="width: 68%"></div>
+</div>
+</div>
+<!-- Breakdown Item -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Rétention des fonds</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">90/100</span>
+</div>
+<div class="w-full bg-surface-variant rounded-full h-2">
+<div class="bg-[#10B981] h-2 rounded-full" style="width: 90%"></div>
+</div>
+</div>
+<!-- Breakdown Item -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Fréquence d'activité</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">78/100</span>
+</div>
+<div class="w-full bg-surface-variant rounded-full h-2">
+<div class="bg-[#10B981] h-2 rounded-full" style="width: 78%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Animate the gauge on load
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                const arc = document.getElementById('score-arc');
+                // Calculate dashoffset for score 715 out of 850 (mapping to 471 max dasharray)
+                // Roughly 84% filled
+                const percentage = 715 / 850;
+                const totalDash = 471;
+                const newOffset = totalDash - (totalDash * percentage);
+                arc.style.strokeDashoffset = newOffset;
+            }, 100);
+        });
+    </script>
+</body></html>
