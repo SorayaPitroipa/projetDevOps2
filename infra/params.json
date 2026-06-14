@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "DBMasterPassword",
+    "ParameterValue": "Azerty123456"
+  },
+  {
+    "ParameterKey": "VpcId",
+    "ParameterValue": "vpc-04680ed5979c7fe2d"
+  },
+  {
+    "ParameterKey": "SubnetIds",
+    "ParameterValue": "subnet-08535826613f07e30,subnet-03caae2f6a9435c60"
+  }
+]

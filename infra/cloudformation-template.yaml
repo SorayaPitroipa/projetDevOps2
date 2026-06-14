@@ -1,242 +1,166 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'CloudFormation template for CEquality project - ECS + RDS + ALB infrastructure'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "CloudFormation template for CEquality project - ECS + RDS + ALB infrastructure"
 
 Parameters:
   EnvironmentName:
     Type: String
     Default: production
-    Description: Environment name (production, staging, etc.)
-  
+
   DBMasterUsername:
     Type: String
     Default: postgres
-    Description: RDS master username
     NoEcho: true
-  
+
   DBMasterPassword:
     Type: String
-    Description: RDS master password (min 8 chars, alphanumeric + special chars)
     NoEcho: true
     MinLength: 8
-  
+
   ECSClusterName:
     Type: String
     Default: projet-cloud-cluster
-    Description: ECS Cluster name
-  
+
   ContainerInsights:
     Type: String
-    Default: 'enabled'
-    AllowedValues: ['enabled', 'disabled']
-    Description: Enable CloudWatch Container Insights
+    Default: enabled
+    AllowedValues:
+      - enabled
+      - disabled
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC where resources will be deployed
+
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: At least 2 subnets in different AZs
 
 Resources:
   # ===========================
-  # VPC & Security Groups
+  # SECURITY GROUPS
   # ===========================
-  
+
   RDSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for RDS PostgreSQL
-      GroupName: !Sub '${EnvironmentName}-rds-sg'
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 5432
           ToPort: 5432
-          CidrIp: 0.0.0.0/0  # WARNING: Restrict this in production
-          Description: PostgreSQL from anywhere
+          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: !Sub '${EnvironmentName}-rds-sg'
+          Value: !Sub "${EnvironmentName}-rds-sg"
 
   ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Security group for Application Load Balancer
-      GroupName: !Sub '${EnvironmentName}-alb-sg'
+      GroupDescription: Security group for ALB
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
-          Description: HTTP from anywhere
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
           CidrIp: 0.0.0.0/0
-          Description: HTTPS from anywhere
-      Tags:
-        - Key: Name
-          Value: !Sub '${EnvironmentName}-alb-sg'
 
   ECSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Security group for ECS tasks
-      GroupName: !Sub '${EnvironmentName}-ecs-sg'
+      GroupDescription: Security group for ECS
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 8000
           ToPort: 8000
-          SourceSecurityGroupId: !GetAtt ALBSecurityGroup.GroupId
-          Description: Backend from ALB
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          SourceSecurityGroupId: !GetAtt ALBSecurityGroup.GroupId
-          Description: Frontend from ALB
-      Tags:
-        - Key: Name
-          Value: !Sub '${EnvironmentName}-ecs-sg'
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
 
   # ===========================
-  # RDS PostgreSQL Database
+  # RDS
   # ===========================
-  
+
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
       DBSubnetGroupDescription: Subnet group for RDS
-      SubnetIds:
-        - !Select [0, !GetAZs '']
-        - !Select [1, !GetAZs '']
-      Tags:
-        - Key: Name
-          Value: !Sub '${EnvironmentName}-db-subnet-group'
+      SubnetIds: !Ref SubnetIds
 
   RDSDatabase:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Snapshot
     Properties:
-      DBInstanceIdentifier: !Sub '${EnvironmentName}-cequality-db'
       Engine: postgres
-      EngineVersion: '15.3'
       DBInstanceClass: db.t3.micro
-      AllocatedStorage: '20'
+      AllocatedStorage: 20
       StorageType: gp3
-      StorageEncrypted: true
       MasterUsername: !Ref DBMasterUsername
       MasterUserPassword: !Ref DBMasterPassword
       DBName: cloud_projet
       DBSubnetGroupName: !Ref DBSubnetGroup
       VPCSecurityGroups:
-        - !GetAtt RDSSecurityGroup.GroupId
+        - !Ref RDSSecurityGroup
       PubliclyAccessible: true
-      BackupRetentionPeriod: 7
-      PreferredBackupWindow: '03:00-04:00'
-      PreferredMaintenanceWindow: 'sun:04:00-sun:05:00'
-      EnableCloudwatchLogsExports:
-        - postgresql
-      Tags:
-        - Key: Name
-          Value: !Sub '${EnvironmentName}-cequality-db'
 
   # ===========================
-  # ECS Cluster
+  # ECS CLUSTER
   # ===========================
-  
+
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: !Ref ECSClusterName
-      ClusterSettings:
-        - Name: containerInsights
-          Value: !Ref ContainerInsights
-      Tags:
-        - Key: Name
-          Value: !Ref ECSClusterName
 
   # ===========================
-  # Application Load Balancer
+  # ALB
   # ===========================
-  
+
   ApplicationLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: !Sub '${EnvironmentName}-alb'
+      Name: !Sub "${EnvironmentName}-alb"
       Type: application
       Scheme: internet-facing
-      IpAddressType: ipv4
       SecurityGroups:
-        - !GetAtt ALBSecurityGroup.GroupId
-      Subnets:
-        - !Select [0, !GetAZs '']
-        - !Select [1, !GetAZs '']
-      Tags:
-        - Key: Name
-          Value: !Sub '${EnvironmentName}-alb'
+        - !Ref ALBSecurityGroup
+      Subnets: !Ref SubnetIds
 
-  # Frontend Target Group
   FrontendTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: !Sub '${EnvironmentName}-frontend-tg'
+      Name: !Sub "${EnvironmentName}-frontend-tg"
       Port: 80
       Protocol: HTTP
       TargetType: ip
-      VpcId: !GetAtt ApplicationLoadBalancer.VpcId
-      HealthCheckEnabled: true
-      HealthCheckPath: /
-      HealthCheckProtocol: HTTP
-      HealthCheckIntervalSeconds: 30
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
-      UnhealthyThresholdCount: 2
-      Matcher:
-        HttpCode: '200-399'
-      Tags:
-        - Key: Name
-          Value: !Sub '${EnvironmentName}-frontend-tg'
+      VpcId: !Ref VpcId
 
-  # Backend Target Group
   BackendTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: !Sub '${EnvironmentName}-backend-tg'
+      Name: !Sub "${EnvironmentName}-backend-tg"
       Port: 8000
       Protocol: HTTP
       TargetType: ip
-      VpcId: !GetAtt ApplicationLoadBalancer.VpcId
-      HealthCheckEnabled: true
-      HealthCheckPath: /health
-      HealthCheckProtocol: HTTP
-      HealthCheckIntervalSeconds: 30
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
-      UnhealthyThresholdCount: 2
-      Matcher:
-        HttpCode: '200'
-      Tags:
-        - Key: Name
-          Value: !Sub '${EnvironmentName}-backend-tg'
+      VpcId: !Ref VpcId
 
-  # ALB Listener - HTTP:80 → Frontend
-  ALBListenerFrontend:
+  ALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
-      LoadBalancerArn: !GetAtt ApplicationLoadBalancer.LoadBalancerArn
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
       Port: 80
       Protocol: HTTP
       DefaultActions:
         - Type: forward
-          TargetGroupArn: !GetAtt FrontendTargetGroup.TargetGroupArn
-
-  # ALB Listener - HTTP:8000 → Backend (path-based routing alternative)
-  ALBListenerBackend:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      LoadBalancerArn: !GetAtt ApplicationLoadBalancer.LoadBalancerArn
-      Port: 8000
-      Protocol: HTTP
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !GetAtt BackendTargetGroup.TargetGroupArn
+          TargetGroupArn: !Ref FrontendTargetGroup
 
   # ===========================
-  # CloudWatch Log Groups
+  # CLOUDWATCH LOGS
   # ===========================
-  
+
   BackendLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -250,88 +174,35 @@ Resources:
       RetentionInDays: 30
 
   # ===========================
-  # ECR Repositories
+  # ECR (NEW REPOSITORIES)
   # ===========================
-  
+
   BackendRepository:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName: projet-cloud-backend
+      RepositoryName: projet-cloud-backend-new
       ImageScanningConfiguration:
         ScanOnPush: true
-      ImageTagMutability: MUTABLE
-      Tags:
-        - Key: Name
-          Value: projet-cloud-backend
 
   FrontendRepository:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName: projet-cloud-frontend
+      RepositoryName: projet-cloud-frontend-new
       ImageScanningConfiguration:
         ScanOnPush: true
-      ImageTagMutability: MUTABLE
-      Tags:
-        - Key: Name
-          Value: projet-cloud-frontend
 
 Outputs:
   DBEndpoint:
-    Description: RDS Database Endpoint
     Value: !GetAtt RDSDatabase.Endpoint.Address
-    Export:
-      Name: !Sub '${EnvironmentName}-db-endpoint'
-
-  DatabaseConnectionString:
-    Description: RDS Connection String (without password)
-    Value: !Sub 'postgresql://${DBMasterUsername}:****@${RDSDatabase.Endpoint.Address}:5432/cloud_projet'
-    Export:
-      Name: !Sub '${EnvironmentName}-db-connection-string'
 
   ECSClusterName:
-    Description: ECS Cluster Name
     Value: !Ref ECSCluster
-    Export:
-      Name: !Sub '${EnvironmentName}-ecs-cluster-name'
 
-  ALBDNSName:
-    Description: ALB DNS Name
+  ALBDNS:
     Value: !GetAtt ApplicationLoadBalancer.DNSName
-    Export:
-      Name: !Sub '${EnvironmentName}-alb-dns-name'
 
-  ALBArn:
-    Description: ALB ARN
-    Value: !GetAtt ApplicationLoadBalancer.LoadBalancerArn
-    Export:
-      Name: !Sub '${EnvironmentName}-alb-arn'
-
-  FrontendTargetGroupArn:
-    Description: Frontend Target Group ARN
-    Value: !GetAtt FrontendTargetGroup.TargetGroupArn
-    Export:
-      Name: !Sub '${EnvironmentName}-frontend-tg-arn'
-
-  BackendTargetGroupArn:
-    Description: Backend Target Group ARN
-    Value: !GetAtt BackendTargetGroup.TargetGroupArn
-    Export:
-      Name: !Sub '${EnvironmentName}-backend-tg-arn'
-
-  BackendRepositoryUri:
-    Description: Backend ECR Repository URI
+  BackendRepoURI:
     Value: !GetAtt BackendRepository.RepositoryUri
-    Export:
-      Name: !Sub '${EnvironmentName}-backend-repo-uri'
 
-  FrontendRepositoryUri:
-    Description: Frontend ECR Repository URI
+  FrontendRepoURI:
     Value: !GetAtt FrontendRepository.RepositoryUri
-    Export:
-      Name: !Sub '${EnvironmentName}-frontend-repo-uri'
-
-  ECSSecurityGroupId:
-    Description: ECS Tasks Security Group ID
-    Value: !GetAtt ECSSecurityGroup.GroupId
-    Export:
-      Name: !Sub '${EnvironmentName}-ecs-sg-id'
