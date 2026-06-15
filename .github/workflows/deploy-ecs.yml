@@ -127,7 +127,7 @@ jobs:
               ECS_SERVICE="$ECS_BACKEND_SERVICE"
               ECR_REPO="projet-cloud-backend"
               ;;
-            frontend)
+            frontend--)
               ECS_SERVICE="$ECS_FRONTEND_SERVICE"
               ECR_REPO="projet-cloud-frontend"
               ;;
